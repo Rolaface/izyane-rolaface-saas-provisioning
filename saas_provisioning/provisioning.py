@@ -31,8 +31,8 @@ def create_site_job(site_name, db_name, payload):
             "--mariadb-root-password", MARIADB_ROOT_PASSWORD,
         ]
 
-        for app in payload.get("apps", []):
-            cmd.extend(["--install-app", app])
+        # for app in payload.get("apps", []):
+        #     cmd.extend(["--install-app", app])
 
         print(f"📝 Running bench new-site for {site_name}")
 
@@ -54,35 +54,35 @@ def create_site_job(site_name, db_name, payload):
         frappe.logger().info(f"Site {site_name} created successfully")
 
         # 1️⃣a Run migrate command to apply custom fields from auth_api and custom_api
-        print(f"🔄 Running migrate for {site_name}...")
-        migrate_cmd = [
-            "/home/frappe/.local/bin/bench", "--site", site_name, "migrate"
-        ]
+        # print(f"🔄 Running migrate for {site_name}...")
+        # migrate_cmd = [
+        #     "/home/frappe/.local/bin/bench", "--site", site_name, "migrate"
+        # ]
 
-        try:
-            migrate_result = subprocess.run(
-                migrate_cmd,
-                cwd=bench_path,
-                check=True,
-                capture_output=True,
-                text=True,
-                timeout=600  # 10 minute timeout for migrate
-            )
+        # try:
+        #     migrate_result = subprocess.run(
+        #         migrate_cmd,
+        #         cwd=bench_path,
+        #         check=True,
+        #         capture_output=True,
+        #         text=True,
+        #         timeout=600  # 10 minute timeout for migrate
+        #     )
 
-            if migrate_result.stdout:
-                print(f"✅ Migrate output:\n{migrate_result.stdout}")
-            if migrate_result.stderr and "error" in migrate_result.stderr.lower():
-                print(f"⚠️  Migrate stderr:\n{migrate_result.stderr}")
+        #     if migrate_result.stdout:
+        #         print(f"✅ Migrate output:\n{migrate_result.stdout}")
+        #     if migrate_result.stderr and "error" in migrate_result.stderr.lower():
+        #         print(f"⚠️  Migrate stderr:\n{migrate_result.stderr}")
 
-            print(f"✅ Migrate completed for {site_name}")
-            frappe.logger().info(f"Migrate completed for {site_name}")
+        #     print(f"✅ Migrate completed for {site_name}")
+        #     frappe.logger().info(f"Migrate completed for {site_name}")
 
-        except subprocess.CalledProcessError as migrate_error:
-            error_msg = f"Migrate command failed: {migrate_error.stderr}"
-            print(f"⚠️  Warning: {error_msg}")
-            frappe.logger().warning(error_msg)
-            # Don't fail the job — continue with setup wizard
-            # Custom fields will be applied during setup wizard if needed
+        # except subprocess.CalledProcessError as migrate_error:
+        #     error_msg = f"Migrate command failed: {migrate_error.stderr}"
+        #     print(f"⚠️  Warning: {error_msg}")
+        #     frappe.logger().warning(error_msg)
+        #     # Don't fail the job — continue with setup wizard
+        #     # Custom fields will be applied during setup wizard if needed
 
         # 3️⃣ Initialize site context
         frappe.init(site=site_name, force=True)
@@ -215,6 +215,7 @@ def create_site_job(site_name, db_name, payload):
         kwargs = parse_args(sanitize_input(setup_payload))
         stages = get_setup_stages(kwargs)
 
+        print(f"✅ Going through Setup stages:")
         try:
             # Run setup synchronously — this will complete before proceeding
             process_setup_stages(stages, kwargs)
