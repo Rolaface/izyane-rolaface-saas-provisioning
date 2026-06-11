@@ -93,7 +93,7 @@ def create_site_job(site_name, db_name, payload):
         # 4️⃣ Check if setup already complete
         if frappe.db.get_single_value("System Settings", "setup_complete"):
             print(f"⚠️  Setup already completed for {site_name}, skipping.")
-            # add_caddy_domain(site_name)
+            add_caddy_domain(site_name)
             return {"status": "ok"}
 
         # Don't run setup in background — run it synchronously and wait for completion
@@ -202,13 +202,13 @@ def create_site_job(site_name, db_name, payload):
         print(f"  Chart of Accounts: {setup_payload.get('chart_of_accounts')}")
 
 
-        # print(f"🌐 Adding {site_name} to Caddy BEFORE setup wizard...")
-        # try:
-        #     add_caddy_domain(site_name)
-        #     print(f"✅ Caddy domain added: {site_name}")
-        # except Exception as caddy_err:
-        #     print(f"⚠️  Caddy setup failed (non-fatal): {caddy_err}")
-        #     frappe.logger().warning(f"Caddy early setup failed: {caddy_err}")
+        print(f"🌐 Adding {site_name} to Caddy BEFORE setup wizard...")
+        try:
+            add_caddy_domain(site_name)
+            print(f"✅ Caddy domain added: {site_name}")
+        except Exception as caddy_err:
+            print(f"⚠️  Caddy setup failed (non-fatal): {caddy_err}")
+            frappe.logger().warning(f"Caddy early setup failed: {caddy_err}")
 
         # 6️⃣ Run ERPNext setup wizard synchronously
         print(f"🔧 Running setup wizard for {site_name}...")
