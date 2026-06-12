@@ -101,21 +101,9 @@ def create_site_job(site_name, db_name, payload):
         import datetime
         current_year = datetime.datetime.now().year
         
-        # Timezone mapping for deprecated/old timezone names
-        timezone_mapping = {
-            "Asia/Calcutta": "Asia/Kolkata",
-            "Asia/Kathmandu": "Asia/Kathmandu",
-            "America/Buenos_Aires": "America/Argentina/Buenos_Aires",
-            "Australia/Melbourne": "Australia/Melbourne",
-            "Australia/Sydney": "Australia/Sydney",
-        }
         
         # Get timezone from payload and apply mapping if needed
-        raw_timezone = payload.get("timezone") or "UTC"
-        timezone = timezone_mapping.get(raw_timezone, raw_timezone)
-        
-        if raw_timezone != timezone:
-            print(f"⚠️  Timezone '{raw_timezone}' mapped to '{timezone}'")
+        timezone = payload.get("timezone") or "UTC"
         
         # Get fiscal year start month from payload (REQUIRED FIELD)
         country = payload.get("country") or "United States"
